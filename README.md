@@ -7,7 +7,7 @@ An **AI-integrated solution** that helps students and professionals **study smar
 ## 🚀 Features
 
 ✅ Upload any PDF file and extract its text instantly.  
-✅ Generate **study questions (Q&A)** with AI.  
+✅ Generate **study questions (Q&A) and mind map** with AI.  
 ✅ Create **visual mind maps** dynamically using D3.js.  
 ✅ Responsive, modern frontend with beautiful card layout.  
 ✅ Backend built with **Node.js + Express.js**.  
