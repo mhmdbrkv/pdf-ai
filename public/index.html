@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF Study Assistant</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: #f5f7fa;
+        color: #2d3748;
+        line-height: 1.6;
+        padding: 2rem 1rem;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #718096;
+        margin-bottom: 3rem;
+        font-size: 1rem;
+      }
+
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.2s;
+      }
+
+      .card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+      }
+
+      .card-icon {
+        font-size: 1.5rem;
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+      }
+
+      button {
+        background: #4299e1;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      button:hover:not(:disabled) {
+        background: #3182ce;
+        transform: translateY(-1px);
+      }
+
+      button:active:not(:disabled) {
+        transform: translateY(0);
+      }
+
+      button:disabled {
+        background: #cbd5e0;
+        cursor: not-allowed;
+      }
+
+      button.secondary {
+        background: #48bb78;
+      }
+
+      button.secondary:hover:not(:disabled) {
+        background: #38a169;
+      }
+
+      button.danger {
+        background: #f56565;
+      }
+
+      button.danger:hover:not(:disabled) {
+        background: #e53e3e;
+      }
+
+      .file-upload {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+
+      input[type="file"] {
+        width: 100%;
+        padding: 1rem;
+        border: 2px dashed #cbd5e0;
+        border-radius: 8px;
+        background: #f7fafc;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+      }
+
+      input[type="file"]:hover {
+        border-color: #4299e1;
+        background: #ebf8ff;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .alert {
+        padding: 0.875rem 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: start;
+        gap: 0.5rem;
+      }
+
+      .alert-success {
+        background: #c6f6d5;
+        color: #22543d;
+        border-left: 4px solid #38a169;
+      }
+
+      .alert-error {
+        background: #fed7d7;
+        color: #742a2a;
+        border-left: 4px solid #e53e3e;
+      }
+
+      .alert-info {
+        background: #bee3f8;
+        color: #2c5282;
+        border-left: 4px solid #4299e1;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      .stat-card {
+        background: #f7fafc;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #4299e1;
+      }
+
+      .stat-label {
+        font-size: 0.85rem;
+        color: #718096;
+        margin-top: 0.25rem;
+      }
+
+      .qa-container {
+        max-height: 600px;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      .qa-container::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .qa-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+
+      .qa-container::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 10px;
+      }
+
+      .qa-container::-webkit-scrollbar-thumb:hover {
+        background: #a0aec0;
+      }
+
+      .qa-item {
+        background: #f7fafc;
+        border-left: 4px solid #4299e1;
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s;
+      }
+
+      .qa-item:hover {
+        background: #edf2f7;
+        border-left-color: #3182ce;
+      }
+
+      .qa-question {
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: start;
+        gap: 0.5rem;
+      }
+
+      .qa-question-icon {
+        color: #4299e1;
+        font-weight: bold;
+        flex-shrink: 0;
+      }
+
+      .qa-answer {
+        color: #4a5568;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        padding-left: 1.5rem;
+      }
+
+      .qa-empty {
+        text-align: center;
+        color: #a0aec0;
+        font-style: italic;
+        padding: 2rem;
+      }
+
+      .mindmap-container {
+        max-height: 600px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 0.5rem;
+      }
+
+      .mindmap-container::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .mindmap-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+
+      .mindmap-container::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 10px;
+      }
+
+      .mindmap-container::-webkit-scrollbar-thumb:hover {
+        background: #a0aec0;
+      }
+
+      .mindmap-empty {
+        text-align: center;
+        color: #a0aec0;
+        font-style: italic;
+        padding: 2rem;
+      }
+
+      .mindmap-root {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem 2rem;
+        border-radius: 16px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 2.5rem;
+        margin-left: 0;
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .mindmap-root::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.1) 0%,
+          rgba(255, 255, 255, 0) 100%
+        );
+      }
+
+      .mindmap-root-text {
+        position: relative;
+        z-index: 1;
+      }
+
+      .mindmap-branch {
+        margin-left: 0;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+
+      .mindmap-node {
+        background: white;
+        border: 2px solid #48bb78;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .mindmap-node:hover {
+        background: #f0fff4;
+        border-color: #38a169;
+        transform: translateX(6px);
+        box-shadow: 0 4px 16px rgba(72, 187, 120, 0.2);
+      }
+
+      .mindmap-node-title {
+        font-weight: 700;
+        color: #2d3748;
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .mindmap-node-icon {
+        font-size: 1.25rem;
+        color: #48bb78;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: #f0fff4;
+        border-radius: 8px;
+      }
+
+      .mindmap-node-description {
+        color: #4a5568;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-top: 0.5rem;
+      }
+
+      .mindmap-subbranch {
+        margin-left: 1rem;
+        margin-top: 1rem;
+        padding-top: 0.75rem;
+        padding-right: 0.75rem;
+        border-top: 1px dashed #e2e8f0;
+      }
+
+      .mindmap-subnode {
+        background: #f7fafc;
+        border-left: 3px solid #4299e1;
+        border-radius: 8px;
+        padding: 0.875rem 1.25rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        color: #2d3748;
+        transition: all 0.2s;
+        display: flex;
+        align-items: start;
+        gap: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      .mindmap-subnode:hover {
+        background: #ebf8ff;
+        border-left-color: #3182ce;
+        transform: translateX(6px);
+        box-shadow: 0 2px 8px rgba(66, 153, 225, 0.15);
+      }
+
+      .mindmap-subnode::before {
+        content: "▸";
+        color: #4299e1;
+        font-weight: bold;
+        flex-shrink: 0;
+      }
+
+      .preview-box {
+        background: #f7fafc;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        max-height: 150px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        font-size: 0.85rem;
+        color: #4a5568;
+        margin-top: 1rem;
+      }
+
+      .preview-box::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .preview-box::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+
+      .preview-box::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 10px;
+      }
+
+      .preview-box::-webkit-scrollbar-thumb:hover {
+        background: #a0aec0;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 1rem 0.5rem;
+        }
+
+        .card {
+          padding: 1.5rem;
+        }
+
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        .button-group {
+          flex-direction: column;
+        }
+
+        button {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>📘 PDF Study Assistant</h1>
+      <p class="subtitle">
+        Upload a PDF to generate study questions and mind maps with AI
+      </p>
+
+      <!-- Upload Section -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">📄</span>
+          <h2 class="card-title">Upload PDF</h2>
+        </div>
+
+        <div class="file-upload">
+          <input type="file" id="pdfInput" accept="application/pdf" />
+        </div>
+
+        <div class="button-group">
+          <button id="uploadBtn">
+            <span>📤</span>
+            Extract Text
+          </button>
+          <button id="clearBtn" class="danger">
+            <span>🗑️</span>
+            Clear All
+          </button>
+        </div>
+
+        <div id="uploadStatus"></div>
+        <div id="textStats" style="display: none"></div>
+        <div id="textPreview" style="display: none"></div>
+      </div>
+
+      <!-- Q&A Section -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">❓</span>
+          <h2 class="card-title">Study Questions</h2>
+        </div>
+
+        <button id="generateQA" class="secondary">
+          <span>🧠</span>
+          Generate Q&A
+        </button>
+
+        <div id="qaStatus"></div>
+        <div id="qaOutput" class="qa-container">
+          <div class="qa-empty">Questions and answers will appear here...</div>
+        </div>
+      </div>
+
+      <!-- Mind Map Section -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🗺️</span>
+          <h2 class="card-title">Mind Map</h2>
+        </div>
+
+        <button id="generateMindMap" class="secondary">
+          <span>🧩</span>
+          Generate Mind Map
+        </button>
+
+        <div id="mindmapStatus"></div>
+        <div id="mindmapOutput" class="mindmap-container">
+          <div class="mindmap-empty">
+            Mind map structure will appear here...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let extractedText = "";
+
+      function showStatus(elementId, message, type = "info") {
+        const element = document.getElementById(elementId);
+        const iconMap = {
+          success: "✅",
+          error: "❌",
+          info: "ℹ️",
+        };
+        element.innerHTML = `<div class="alert alert-${type}"><span>${iconMap[type]}</span><span>${message}</span></div>`;
+      }
+
+      function setLoading(button, isLoading) {
+        button.disabled = isLoading;
+        if (isLoading) {
+          button.setAttribute("data-text", button.innerHTML);
+          button.innerHTML =
+            '<span class="spinner"></span><span>Processing...</span>';
+        } else {
+          button.innerHTML = button.getAttribute("data-text");
+        }
+      }
+
+      function renderQA(qaArray) {
+        const container = document.getElementById("qaOutput");
+
+        if (!qaArray || qaArray.length === 0) {
+          container.innerHTML =
+            '<div class="qa-empty">No questions generated.</div>';
+          return;
+        }
+
+        let html = "";
+        qaArray.forEach((item, index) => {
+          html += `
+            <div class="qa-item">
+              <div class="qa-question">
+                <span class="qa-question-icon">Q${index + 1}:</span>
+                <span>${item.question || item.q || ""}</span>
+              </div>
+              <div class="qa-answer">${item.answer || item.a || ""}</div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+      }
+
+      function renderMindMap(mindmapData) {
+        const container = document.getElementById("mindmapOutput");
+
+        if (!mindmapData) {
+          container.innerHTML =
+            '<div class="mindmap-empty">No mind map generated.</div>';
+          return;
+        }
+
+        let html = "";
+
+        if (mindmapData.title || mindmapData.topic || mindmapData.root) {
+          html += `<div class="mindmap-root"><div class="mindmap-root-text">${
+            mindmapData.title || mindmapData.topic || mindmapData.root
+          }</div></div>`;
+        }
+
+        const branches =
+          mindmapData.branches ||
+          mindmapData.nodes ||
+          mindmapData.children ||
+          mindmapData.subtopics ||
+          [];
+
+        branches.forEach((branch, index) => {
+          html += '<div class="mindmap-branch">';
+
+          html += '<div class="mindmap-node">';
+          html += `<div class="mindmap-node-title"><span class="mindmap-node-icon">${
+            index + 1
+          }</span><span>${
+            branch.title || branch.name || branch.topic || ""
+          }</span></div>`;
+
+          if (branch.description || branch.content || branch.summary) {
+            html += `<div class="mindmap-node-description">${
+              branch.description || branch.content || branch.summary
+            }</div>`;
+          }
+          html += "</div>";
+
+          const subItems =
+            branch.subtopics ||
+            branch.children ||
+            branch.items ||
+            branch.points ||
+            [];
+          if (subItems.length > 0) {
+            html += '<div class="mindmap-subbranch">';
+            subItems.forEach((subItem) => {
+              const subText =
+                typeof subItem === "string"
+                  ? subItem
+                  : subItem.title || subItem.name || subItem.text || "";
+              html += `<div class="mindmap-subnode">${subText}</div>`;
+            });
+            html += "</div>";
+          }
+
+          html += "</div>";
+        });
+
+        container.innerHTML =
+          html ||
+          '<div class="mindmap-empty">Mind map structure not recognized.</div>';
+      }
+
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        extractedText = "";
+        document.getElementById("pdfInput").value = "";
+        document.getElementById("uploadStatus").innerHTML = "";
+        document.getElementById("textStats").style.display = "none";
+        document.getElementById("textPreview").style.display = "none";
+        document.getElementById("qaOutput").innerHTML =
+          '<div class="qa-empty">Questions and answers will appear here...</div>';
+        document.getElementById("mindmapOutput").innerHTML =
+          '<div class="mindmap-empty">Mind map structure will appear here...</div>';
+        document.getElementById("qaStatus").innerHTML = "";
+        document.getElementById("mindmapStatus").innerHTML = "";
+      });
+
+      document
+        .getElementById("uploadBtn")
+        .addEventListener("click", async () => {
+          const fileInput = document.getElementById("pdfInput");
+          const file = fileInput.files[0];
+          const uploadBtn = document.getElementById("uploadBtn");
+
+          if (!file) {
+            showStatus(
+              "uploadStatus",
+              "Please select a PDF file first",
+              "error"
+            );
+            return;
+          }
+
+          if (file.type !== "application/pdf") {
+            showStatus("uploadStatus", "Please upload a PDF file", "error");
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append("file", file);
+
+          setLoading(uploadBtn, true);
+          showStatus(
+            "uploadStatus",
+            "Uploading and extracting text...",
+            "info"
+          );
+
+          try {
+            const res = await fetch("/upload", {
+              method: "POST",
+              body: formData,
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+              throw new Error(
+                data.error || `HTTP error! status: ${res.status}`
+              );
+            }
+
+            extractedText = data.text;
+
+            const wordCount = extractedText
+              .split(/\s+/)
+              .filter((word) => word.length > 0).length;
+            const charCount = extractedText.length;
+            const pageCount = data.pages || "N/A";
+
+            document.getElementById("textStats").innerHTML = `
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-value">${wordCount}</div>
+                <div class="stat-label">Words</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">${charCount}</div>
+                <div class="stat-label">Characters</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">${pageCount}</div>
+                <div class="stat-label">Pages</div>
+              </div>
+            </div>
+          `;
+            document.getElementById("textStats").style.display = "block";
+
+            const previewText =
+              extractedText.length > 500
+                ? extractedText.substring(0, 500) + "..."
+                : extractedText;
+            document.getElementById(
+              "textPreview"
+            ).innerHTML = `<div class="preview-box">${previewText}</div>`;
+            document.getElementById("textPreview").style.display = "block";
+
+            showStatus(
+              "uploadStatus",
+              "Text extracted successfully! You can now generate Q&A or Mind Map.",
+              "success"
+            );
+          } catch (error) {
+            console.error("Upload error:", error);
+            showStatus("uploadStatus", `Error: ${error.message}`, "error");
+          } finally {
+            setLoading(uploadBtn, false);
+          }
+        });
+
+      document
+        .getElementById("generateQA")
+        .addEventListener("click", async () => {
+          if (!extractedText) {
+            showStatus(
+              "qaStatus",
+              "Please upload and extract a PDF first",
+              "error"
+            );
+            return;
+          }
+
+          const qaBtn = document.getElementById("generateQA");
+          setLoading(qaBtn, true);
+          showStatus("qaStatus", "Generating questions and answers...", "info");
+
+          try {
+            const res = await fetch("/ai/generate-qa", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ text: extractedText }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+              throw new Error(
+                data.error || `HTTP error! status: ${res.status}`
+              );
+            }
+
+            renderQA(data.qa);
+            showStatus(
+              "qaStatus",
+              `Generated ${data.qa.length} questions successfully!`,
+              "success"
+            );
+          } catch (error) {
+            console.error("Q&A generation error:", error);
+            showStatus(
+              "qaStatus",
+              `Error generating Q&A: ${error.message}`,
+              "error"
+            );
+            document.getElementById("qaOutput").innerHTML =
+              '<div class="qa-empty">Error generating Q&A. Please try again.</div>';
+          } finally {
+            setLoading(qaBtn, false);
+          }
+        });
+
+      document
+        .getElementById("generateMindMap")
+        .addEventListener("click", async () => {
+          if (!extractedText) {
+            showStatus(
+              "mindmapStatus",
+              "Please upload and extract a PDF first",
+              "error"
+            );
+            return;
+          }
+
+          const mindmapBtn = document.getElementById("generateMindMap");
+          setLoading(mindmapBtn, true);
+          showStatus(
+            "mindmapStatus",
+            "Generating mind map structure...",
+            "info"
+          );
+
+          try {
+            const res = await fetch("/ai/generate-mindmap", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ text: extractedText }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+              throw new Error(
+                data.error || `HTTP error! status: ${res.status}`
+              );
+            }
+
+            renderMindMap(data.mindmap);
+            showStatus(
+              "mindmapStatus",
+              "Mind map generated successfully!",
+              "success"
+            );
+          } catch (error) {
+            console.error("Mind map generation error:", error);
+            showStatus(
+              "mindmapStatus",
+              `Error generating mind map: ${error.message}`,
+              "error"
+            );
+            document.getElementById("mindmapOutput").innerHTML =
+              '<div class="mindmap-empty">Error generating mind map. Please try again.</div>';
+          } finally {
+            setLoading(mindmapBtn, false);
+          }
+        });
+
+      document
+        .getElementById("pdfInput")
+        .addEventListener("change", function () {
+          if (this.files.length > 0) {
+            const fileName = this.files[0].name;
+            showStatus("uploadStatus", `Selected: ${fileName}`, "info");
+          }
+        });
+    </script>
+  </body>
+</html>
