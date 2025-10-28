@@ -1,0 +1,12 @@
+services:
+  pdf-ai-app:
+    build: .
+    container_name: pdf-ai-prod
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    command: node server.js
+    environment:
+      - NODE_ENV=production
+    restart: always
