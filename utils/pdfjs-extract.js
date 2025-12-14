@@ -1,11 +1,11 @@
 // ✅ Import pdf.js-extract
 const { PDFExtract } = require("pdf.js-extract");
 
-const pdfExtract = new PDFExtract();
-
 async function extractTextWithPDFJS(filePath) {
   try {
     console.log("🔍 Extracting text with pdf.js-extract...");
+
+    const pdfExtract = new PDFExtract();
 
     const options = {
       firstPage: 1, // Start from page 1

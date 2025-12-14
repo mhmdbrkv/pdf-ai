@@ -1,6 +1,6 @@
 const qaPrompt = (text) => {
   return `
-    You are an expert tutor. Create 8-15 study questions with clear, concise answers based on the text below.
+    You are an expert tutor. Create 20 to 50 study questions with clear, concise answers based on the text below in the same language as the text.
     
     IMPORTANT: Return ONLY a valid JSON array in this exact format, no other text:
     
@@ -16,7 +16,7 @@ const qaPrompt = (text) => {
     ]
     
     Text content:
-    ${text.substring(0, 4000)}  // Limit text length
+    ${text}   
     `;
 };
 

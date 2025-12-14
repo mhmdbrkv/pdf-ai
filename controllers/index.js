@@ -93,6 +93,12 @@ const generateQAController = async (req, res) => {
     const response = await ai.models.generateContent({
       model: currentModel,
       contents: prompt,
+      generationConfig: {
+        temperature: 0.3,
+        maxOutputTokens: 1024,
+        topP: 0.7,
+        topK: 30,
+      },
     });
 
     const responseText = response.text;
@@ -175,6 +181,12 @@ const generateMindmapController = async (req, res) => {
     const response = await ai.models.generateContent({
       model: currentModel,
       contents: prompt,
+      generationConfig: {
+        temperature: 0.3,
+        maxOutputTokens: 1024,
+        topP: 0.7,
+        topK: 30,
+      },
     });
 
     const responseText = response.text;

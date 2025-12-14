@@ -5,6 +5,6 @@ const { GEMINI_API_KEY } = require("../config");
 const ai = new GoogleGenAI({
   apiKey: GEMINI_API_KEY,
 });
-let currentModel = "gemini-2.0-flash";
+let currentModel = "gemini-2.5-flash";
 
 module.exports = { ai, currentModel };
