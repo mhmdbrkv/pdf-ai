@@ -2,6 +2,7 @@ const fs = require("fs");
 const extractTextWithPDFJS = require("../utils/pdfjs-extract.js");
 const { ai, currentModel } = require("../utils/gemini.js");
 const { qaPrompt, mindMapPrompt } = require("../utils/prompt.js");
+
 const uploadController = async (req, res) => {
   try {
     if (!req.file) {

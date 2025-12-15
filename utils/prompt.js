@@ -1,9 +1,13 @@
 const qaPrompt = (text) => {
   return `
-    You are an expert tutor. Create 20 to 50 study questions with clear, concise answers based on the text below in the same language as the text.
-    
+    You are an expert tutor. Create 20 to 50 study questions that cover the main topics with clear,concise answers based on the text below in the same language as the text.
+    FLASHCARD TYPES:
+    - Definition cards: "What is [term]?" → Definition
+    - Concept cards: "Explain [concept]" → Explanation
+    - Relationship cards: "How does X relate to Y?" → Description
+    - Application cards: "When would you use [concept]?" → Use case
+    - Comparison cards: "What's the difference between X and Y?" → Comparison
     IMPORTANT: Return ONLY a valid JSON array in this exact format, no other text:
-    
     [
       {
         "question": "What is the main topic discussed?",
@@ -14,7 +18,6 @@ const qaPrompt = (text) => {
         "answer": "The key points include..."
       }
     ]
-    
     Text content:
     ${text}   
     `;
